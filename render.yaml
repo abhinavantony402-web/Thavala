@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: thavala-store
+    runtime: node
+    plan: free
+    region: singapore # change to your nearest region
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "22.11.0"
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
