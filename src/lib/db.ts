@@ -104,12 +104,7 @@ for (const p of products) {
 }
 db.exec("DELETE FROM categories WHERE slug IN ('electronics','apparel') AND NOT EXISTS (SELECT 1 FROM products WHERE products.category_id=categories.id)");
 
-const userCountRow = db.prepare("SELECT COUNT(*) AS c FROM users").get() as { c: number } | undefined;
-if (!userCountRow) throw new Error("Unable to count users.");
-const userCount = userCountRow.c;
-if (userCount === 0) {
-  const adminHash = crypto.scryptSync("admin123", "salt", 64).toString("hex");
-  db.prepare("INSERT INTO users (email,password_hash,name,role) VALUES (?,?,?,?)").run("admin@example.com", adminHash, "Admin", "admin");
-  const custHash = crypto.scryptSync("customer123", "salt", 64).toString("hex");
-  db.prepare("INSERT INTO users (email,password_hash,name,role) VALUES (?,?,?,?)").run("customer@example.com", custHash, "Customer", "customer");
-}
+const adminHash = crypto.scryptSync("admin123", "salt", 64).toString("hex");
+const custHash = crypto.scryptSync("customer123", "salt", 64).toString("hex");
+db.prepare("INSERT OR IGNORE INTO users (email, password_hash, name, role) VALUES (?, ?, ?, ?)").run("admin@example.com", adminHash, "Admin", "admin");
+db.prepare("INSERT OR IGNORE INTO users (email, password_hash, name, role) VALUES (?, ?, ?, ?)").run("customer@example.com", custHash, "Customer", "customer");
